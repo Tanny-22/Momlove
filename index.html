@@ -90,12 +90,37 @@
   }
 
   .mom-img{
-    width:clamp(42px, 11vw, 78px);
-    height:clamp(42px, 11vw, 78px);
+    /* ขนาดพื้นฐาน อิงตาม vmin เพื่อให้สมส่วนทั้งแนวตั้ง/แนวนอน */
+    width:clamp(70px, 20vmin, 110px);
+    height:clamp(70px, 20vmin, 110px);
     border-radius:50%;
     object-fit:cover;
     border:3px solid #fff;
     box-shadow:0 2px 10px rgba(255,60,120,0.45);
+  }
+
+  /* จอเล็กมาก (มือถือจอเล็ก) ลดขนาดลงอัตโนมัติ */
+  @media (max-width:360px){
+    .mom-img{
+      width:clamp(56px, 18vmin, 90px);
+      height:clamp(56px, 18vmin, 90px);
+    }
+  }
+
+  /* Tablet ขึ้นไป */
+  @media (min-width:700px){
+    .mom-img{
+      width:clamp(80px, 12vmin, 130px);
+      height:clamp(80px, 12vmin, 130px);
+    }
+  }
+
+  /* Desktop: ไม่จำเป็นต้องใหญ่เท่ามือถือตามสัดส่วนจอ */
+  @media (min-width:1100px){
+    .mom-img{
+      width:clamp(70px, 8vmin, 110px);
+      height:clamp(70px, 8vmin, 110px);
+    }
   }
 
   .heart{
@@ -193,8 +218,31 @@ async function buildOrbit() {
   const total = items.length;
   const angleStep = 360 / total;
 
-  // รัศมีวงโคจรอิงตามขนาดจอ (responsive)
-  const baseRadius = Math.min(window.innerWidth, window.innerHeight) * 0.36;
+  // ประมาณขนาดรูป ณ ปัจจุบัน (ต้องตรงกับค่าใน CSS .mom-img เพื่อไม่ให้รูปชนขอบจอ)
+  const vmin = Math.min(window.innerWidth, window.innerHeight);
+  let approxImgSize;
+  if (window.innerWidth <= 360) {
+    approxImgSize = Math.min(Math.max(vmin * 0.18, 56), 90);
+  } else if (window.innerWidth >= 1100) {
+    approxImgSize = Math.min(Math.max(vmin * 0.08, 70), 110);
+  } else if (window.innerWidth >= 700) {
+    approxImgSize = Math.min(Math.max(vmin * 0.12, 80), 130);
+  } else {
+    approxImgSize = Math.min(Math.max(vmin * 0.20, 70), 110);
+  }
+
+  // รัศมีวงโคจร: เว้นระยะขอบจอ (padding) และเว้นพื้นที่ให้ข้อความตรงกลางไม่ถูกบัง
+  const edgePadding = approxImgSize / 2 + 12; // กันรูปชนขอบจอ
+  const maxRadius = (vmin / 2) - edgePadding;
+  const minRadiusFromCenter = approxImgSize * 0.9 + 40; // กันรูปทับข้อความตรงกลาง
+
+  // กันรูปทับกันเองเมื่อรูปมีขนาดใหญ่ขึ้นและมีจำนวนมาก (คำนวณจากเส้นรอบวงที่ต้องใช้)
+  const spacingNeededRadius = (approxImgSize * total * 1.15) / (2 * Math.PI);
+
+  const baseRadius = Math.min(
+    Math.max(vmin * 0.36, minRadiusFromCenter, spacingNeededRadius),
+    maxRadius
+  );
 
   items.forEach((item, i) => {
     const angle = angleStep * i;
