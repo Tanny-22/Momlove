@@ -1,369 +1,1433 @@
 <!DOCTYPE html>
 <html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>I LOVE MOM 3000</title>
-<style>
-  :root{
-    --orbit-size: min(94vw, 94vh, 760px);
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{
-    margin:0;padding:0;
-    width:100%;height:100%;
-    overflow:hidden;
-    background:linear-gradient(135deg,#ffd6e8,#ff9fc7,#ffd6e8);
-    background-size:300% 300%;
-    animation:bgShift 12s ease-in-out infinite;
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-    touch-action:manipulation;
-  }
-  @keyframes bgShift{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-  }
 
-  .stage{
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>I LOVE MOM 3000</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+
+    width:100%;
+    height:100%;
+
+    margin:0;
+    padding:0;
+
+    overflow:hidden;
+
+    touch-action:manipulation;
+
+    font-family:
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+body{
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffd6e8,
+            #ff9fc7,
+            #ffd6e8
+        );
+
+    background-size:300% 300%;
+
+    animation:
+        backgroundMove
+        12s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes backgroundMove{
+
+    0%{
+        background-position:0% 50%;
+    }
+
+    50%{
+        background-position:100% 50%;
+    }
+
+    100%{
+        background-position:0% 50%;
+    }
+
+}
+
+
+/* =========================================================
+   STAGE
+   ========================================================= */
+
+.stage{
+
     position:relative;
+
     width:100vw;
     height:100vh;
+
     display:flex;
+
     align-items:center;
     justify-content:center;
-  }
 
-  .orbit-container{
+}
+
+
+/* =========================================================
+   ORBIT AREA
+   ========================================================= */
+
+.orbit-container{
+
     position:relative;
-    width:var(--orbit-size);
-    height:var(--orbit-size);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
 
-  .center-text{
-    position:relative;
-    z-index:50;
-    font-size:clamp(1.6rem, 6vw, 3rem);
-    font-weight:800;
-    text-align:center;
-    color:#ff2d6b;
-    text-shadow:
-      0 0 10px rgba(255,255,255,0.9),
-      0 0 20px rgba(255,105,180,0.8),
-      0 2px 4px rgba(0,0,0,0.15);
-    letter-spacing:1px;
-    padding:0 0.5em;
-    animation:pulse 2.4s ease-in-out infinite;
-    user-select:none;
-    pointer-events:none;
-  }
-  @keyframes pulse{
-    0%,100%{transform:scale(1);}
-    50%{transform:scale(1.06);}
-  }
+    width:min(94vw,94vh);
+    height:min(94vw,94vh);
 
-  .orbit-item{
+    max-width:760px;
+    max-height:760px;
+
+}
+
+
+/* =========================================================
+   CENTER TEXT
+   ========================================================= */
+
+.center-text{
+
     position:absolute;
-    top:50%;
+
     left:50%;
-    transform-origin:0 0;
-    animation:spin linear infinite;
-    will-change:transform;
-  }
-  @keyframes spin{
-    from{transform:rotate(0deg) translateX(var(--radius)) rotate(0deg);}
-    to{transform:rotate(360deg) translateX(var(--radius)) rotate(-360deg);}
-  }
+    top:50%;
 
-  .orbit-item .inner{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    animation:bob ease-in-out infinite;
-  }
-  @keyframes bob{
-    0%,100%{transform:translateY(0) scale(1);}
-    50%{transform:translateY(-6px) scale(1.05);}
-  }
+    transform:
+        translate(-50%,-50%);
 
-  /* ===============================
-     ขนาดรูปภาพ (Responsive)
-     ค่าเหล่านี้เป็น "ค่าเป้าหมายเริ่มต้น" ตาม breakpoint
-     JavaScript จะคำนวณขนาดจริงเพิ่มเติมโดยอิงจาก
-     จำนวนรูป + พื้นที่หน้าจอ แล้ว set ทับผ่าน inline style
-     เพื่อให้ขนาดรูปกับระยะวงโคจรสอดคล้องกันเสมอ
-     =============================== */
-  .mom-img{
-    /* มือถือทั่วไป: เป้าหมาย 120–150px */
-    width:clamp(120px, 34vmin, 150px);
-    height:clamp(120px, 34vmin, 150px);
-    border-radius:50%;
-    object-fit:cover;
-    border:4px solid #fff;
-    box-shadow:0 4px 16px rgba(255,45,107,0.5), 0 0 0 2px rgba(255,255,255,0.6);
-  }
+    z-index:10000;
 
-  /* มือถือจอเล็ก: เป้าหมาย 100–120px */
-  @media (max-width:360px){
-    .mom-img{
-      width:clamp(100px, 30vmin, 120px);
-      height:clamp(100px, 30vmin, 120px);
-    }
-  }
+    width:max-content;
 
-  /* มือถือจอใหญ่ (เช่น Pro Max / Plus): เป้าหมาย 150–170px */
-  @media (min-width:430px) and (max-width:699px){
-    .mom-img{
-      width:clamp(140px, 36vmin, 170px);
-      height:clamp(140px, 36vmin, 170px);
-    }
-  }
+    max-width:90vw;
 
-  /* Tablet */
-  @media (min-width:700px){
-    .mom-img{
-      width:clamp(130px, 20vmin, 170px);
-      height:clamp(130px, 20vmin, 170px);
-    }
-  }
+    color:#ff2d6b;
 
-  /* Desktop: ไม่จำเป็นต้องใหญ่เท่ามือถือตามสัดส่วนจอ */
-  @media (min-width:1100px){
-    .mom-img{
-      width:clamp(90px, 10vmin, 140px);
-      height:clamp(90px, 10vmin, 140px);
-    }
-  }
+    font-size:
+        clamp(
+            1.6rem,
+            6vw,
+            3rem
+        );
 
-  .heart{
-    font-size:clamp(20px, 6vw, 34px);
-    filter:drop-shadow(0 2px 4px rgba(255,60,120,0.4));
-  }
+    font-weight:800;
 
-  .tap-fx{
-    position:fixed;
+    text-align:center;
+
+    letter-spacing:1px;
+
+    white-space:nowrap;
+
+    user-select:none;
+
     pointer-events:none;
+
+    text-shadow:
+
+        0 0 10px
+        rgba(255,255,255,.95),
+
+        0 0 20px
+        rgba(255,105,180,.8),
+
+        0 2px 4px
+        rgba(0,0,0,.15);
+
+    animation:
+        textPulse
+        2.4s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes textPulse{
+
+    0%,
+    100%{
+
+        transform:
+            translate(-50%,-50%)
+            scale(1);
+
+    }
+
+    50%{
+
+        transform:
+            translate(-50%,-50%)
+            scale(1.06);
+
+    }
+
+}
+
+
+/* =========================================================
+   =========================================================
+   IMAGE
+   =========================================================
+   ========================================================= */
+
+
+/*
+   ตัวนี้เป็น "จุดโคจร"
+
+   JavaScript จะเปลี่ยน
+   left / top ของมัน
+*/
+
+.image-item{
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:0;
+    height:0;
+
+    z-index:200;
+
+    pointer-events:none;
+
+    /*
+       สำคัญ:
+       ไม่มี rotate
+    */
+
+    will-change:
+        transform;
+}
+
+
+/*
+   รูปจริง
+*/
+
+.image-holder{
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    transform:
+        translate(-50%,-50%);
+
+}
+
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+
+.mom-img{
+
+    display:block;
+
+    width:var(--image-size);
+    height:var(--image-size);
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:4px solid white;
+
+    background:white;
+
+    box-shadow:
+
+        0 5px 18px
+        rgba(255,45,107,.5),
+
+        0 0 0 2px
+        rgba(255,255,255,.7);
+
+    /*
+       ไม่หมุน
+    */
+
+    transform:none;
+
+    user-select:none;
+
+    -webkit-user-drag:none;
+
+}
+
+
+/* =========================================================
+   =========================================================
+   HEART
+   =========================================================
+   ========================================================= */
+
+.heart-item{
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:0;
+    height:0;
+
+    z-index:5000;
+
+    pointer-events:none;
+
+    will-change:
+        transform;
+
+}
+
+
+.heart-holder{
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    transform:
+        translate(-50%,-50%);
+
+}
+
+
+.heart{
+
+    display:block;
+
+    font-size:
+        var(--heart-size);
+
+    line-height:1;
+
+    white-space:nowrap;
+
+    transform:none;
+
+    user-select:none;
+
+    pointer-events:none;
+
+    filter:
+        drop-shadow(
+            0 3px 5px
+            rgba(255,60,120,.45)
+        );
+
+    animation:
+        heartFloat
+        var(--float-speed)
+        ease-in-out
+        infinite;
+
+}
+
+
+/* =========================================================
+   HEART FLOAT
+   ========================================================= */
+
+@keyframes heartFloat{
+
+    0%,
+    100%{
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+    50%{
+
+        transform:
+            translateY(-7px)
+            scale(1.1);
+
+    }
+
+}
+
+
+/* =========================================================
+   TAP EFFECT
+   ========================================================= */
+
+.tap-fx{
+
+    position:fixed;
+
+    pointer-events:none;
+
+    z-index:99999;
+
     font-size:24px;
-    z-index:999;
-    animation:floatUp 1s ease-out forwards;
-  }
-  @keyframes floatUp{
-    0%{transform:translate(-50%,-50%) scale(0.6);opacity:1;}
-    60%{transform:translate(-50%,-160%) scale(1.2);opacity:1;}
-    100%{transform:translate(-50%,-240%) scale(1);opacity:0;}
-  }
+
+    animation:
+        tapFloat
+        1s
+        ease-out
+        forwards;
+
+}
+
+
+@keyframes tapFloat{
+
+    0%{
+
+        transform:
+            translate(-50%,-50%)
+            scale(.6);
+
+        opacity:1;
+
+    }
+
+    60%{
+
+        transform:
+            translate(-50%,-160%)
+            scale(1.2);
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        transform:
+            translate(-50%,-240%)
+            scale(1);
+
+        opacity:0;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL SCREEN
+   ========================================================= */
+
+@media(max-width:360px){
+
+    .mom-img{
+
+        border-width:3px;
+
+    }
+
+}
+
+
+/* =========================================================
+   LARGE PHONE
+   ========================================================= */
+
+@media(min-width:430px){
+
+    .mom-img{
+
+        border-width:4px;
+
+    }
+
+}
+
 </style>
+
 </head>
+
+
 <body>
 
+
 <div class="stage">
-  <div class="orbit-container" id="orbitContainer">
-    <div class="center-text">I LOVE MOM 3000</div>
-  </div>
+
+    <div
+        class="orbit-container"
+        id="orbitContainer"
+    >
+
+        <div class="center-text">
+            I LOVE MOM 3000
+        </div>
+
+    </div>
+
 </div>
 
+
 <script>
-/* ===============================
-   CONFIG: จำนวนรูปที่จะพยายามโหลด
-   เปลี่ยนตัวเลขนี้เพื่อเพิ่ม/ลดจำนวนรูป
-   =============================== */
+
+/* =========================================================
+   CONFIG
+   ========================================================= */
+
 const IMAGE_COUNT = 10;
 
+const HEART_COUNT = 40;
+
 const IMAGE_FOLDER = "images/";
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
-const HEARTS = ["❤️", "💗", "💖", "💕", "💓", "💞"];
-const TAP_EFFECTS = ["❤️", "💖", "✨", "💕", "⭐"];
 
-const orbitContainer = document.getElementById("orbitContainer");
+const IMAGE_EXTENSIONS = [
+    "jpg",
+    "jpeg",
+    "png",
+    "webp"
+];
 
-// ตรวจสอบว่ารูปมีอยู่จริงหรือไม่ โดยลองโหลดทีละ extension
-function tryLoadImage(index) {
-  return new Promise((resolve) => {
-    let extIdx = 0;
+const HEART_TYPES = [
+    "❤️",
+    "💗",
+    "💖",
+    "💕",
+    "💓",
+    "💞",
+    "💘",
+    "💝"
+];
 
-    function attempt() {
-      if (extIdx >= IMAGE_EXTENSIONS.length) {
-        resolve(null); // ไม่มีรูปนี้เลย ข้ามไป
+const TAP_EFFECTS = [
+    "❤️",
+    "💖",
+    "✨",
+    "💕",
+    "⭐"
+];
+
+
+const container =
+    document.getElementById(
+        "orbitContainer"
+    );
+
+
+/* =========================================================
+   OBJECT ARRAYS
+   ========================================================= */
+
+let imageObjects = [];
+
+let heartObjects = [];
+
+
+/*
+   เวลาที่เริ่ม animation
+*/
+
+let startTime =
+    performance.now();
+
+
+/* =========================================================
+   CLAMP
+   ========================================================= */
+
+function clamp(
+    min,
+    value,
+    max
+){
+
+    return Math.min(
+        Math.max(value,min),
+        max
+    );
+
+}
+
+
+/* =========================================================
+   FIND IMAGE
+   ========================================================= */
+
+function findImage(index){
+
+    return new Promise(
+        resolve => {
+
+            let extIndex=0;
+
+
+            function next(){
+
+                if(
+                    extIndex >=
+                    IMAGE_EXTENSIONS.length
+                ){
+
+                    resolve(null);
+
+                    return;
+
+                }
+
+
+                const ext =
+                    IMAGE_EXTENSIONS[
+                        extIndex
+                    ];
+
+
+                const src =
+                    `${IMAGE_FOLDER}Mom${index}.${ext}`;
+
+
+                const img =
+                    new Image();
+
+
+                img.onload=()=>{
+
+                    resolve(src);
+
+                };
+
+
+                img.onerror=()=>{
+
+                    extIndex++;
+
+                    next();
+
+                };
+
+
+                img.src=src;
+
+            }
+
+
+            next();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   IMAGE SIZE
+   ========================================================= */
+
+function getImageSize(){
+
+    const w =
+        window.innerWidth;
+
+    const h =
+        window.innerHeight;
+
+    const vmin =
+        Math.min(w,h);
+
+
+    if(w>=430){
+
+        return clamp(
+            145,
+            vmin*.40,
+            190
+        );
+
+    }
+
+
+    if(w>360){
+
+        return clamp(
+            130,
+            vmin*.38,
+            175
+        );
+
+    }
+
+
+    return clamp(
+        110,
+        vmin*.32,
+        145
+    );
+
+}
+
+
+/* =========================================================
+   IMAGE LAYOUT
+   ========================================================= */
+
+function getImageLayout(
+    count,
+    size
+){
+
+    const vmin =
+        Math.min(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+
+    /*
+       ยิ่งค่ามาก
+       รูปยิ่งห่างกัน
+    */
+
+    const circumference =
+        count *
+        size *
+        1.45;
+
+
+    let radius =
+        circumference /
+        (2*Math.PI);
+
+
+    /*
+       กันชนข้อความ
+    */
+
+    radius =
+        Math.max(
+            radius,
+            size*.9+50,
+            vmin*.35
+        );
+
+
+    /*
+       ขอบจอ
+    */
+
+    const maxRadius =
+        vmin/2 -
+        size/2 -
+        8;
+
+
+    let finalSize =
+        size;
+
+
+    /*
+       ถ้าใหญ่เกินไป
+       ลดรูปลง
+    */
+
+    while(
+        radius>maxRadius &&
+        finalSize>100
+    ){
+
+        finalSize*=.94;
+
+
+        radius=Math.max(
+
+            (
+                count*
+                finalSize*
+                1.45
+            )
+            /
+            (2*Math.PI),
+
+            finalSize*.9+50,
+
+            vmin*.35
+
+        );
+
+    }
+
+
+    radius=
+        Math.min(
+            radius,
+            maxRadius
+        );
+
+
+    return {
+
+        radius:radius,
+
+        size:finalSize
+
+    };
+
+}
+
+
+/* =========================================================
+   CREATE IMAGES
+   ========================================================= */
+
+async function createImages(){
+
+    const promises=[];
+
+
+    for(
+        let i=1;
+        i<=IMAGE_COUNT;
+        i++
+    ){
+
+        promises.push(
+            findImage(i)
+        );
+
+    }
+
+
+    const results=
+        await Promise.all(
+            promises
+        );
+
+
+    const images=
+        results.filter(
+            x=>x!==null
+        );
+
+
+    if(!images.length){
+
         return;
-      }
-      const ext = IMAGE_EXTENSIONS[extIdx];
-      const src = `${IMAGE_FOLDER}Mom${index}.${ext}`;
-      const img = new Image();
-      img.onload = () => resolve(src);
-      img.onerror = () => {
-        extIdx++;
-        attempt();
-      };
-      img.src = src;
-    }
-    attempt();
-  });
-}
 
-// อ่านขนาดรูปเป้าหมายตาม breakpoint ปัจจุบัน (ให้ตรงกับค่าใน CSS .mom-img)
-function getTargetImgSize() {
-  const w = window.innerWidth;
-  const vmin = Math.min(window.innerWidth, window.innerHeight);
-  if (w <= 360) {
-    return clampVal(100, vmin * 0.30, 120);
-  } else if (w >= 1100) {
-    return clampVal(90, vmin * 0.10, 140);
-  } else if (w >= 700) {
-    return clampVal(130, vmin * 0.20, 170);
-  } else if (w >= 430) {
-    return clampVal(140, vmin * 0.36, 170);
-  } else {
-    return clampVal(120, vmin * 0.34, 150);
-  }
-}
-
-function clampVal(min, val, max) {
-  return Math.min(Math.max(val, min), max);
-}
-
-/**
- * คำนวณขนาดรูปจริง + รัศมีวงโคจร แบบสมดุล
- * โดยพิจารณาจาก: ขนาดหน้าจอ, จำนวนรูป(+หัวใจ), ขนาดรูปเป้าหมาย
- * ถ้าพื้นที่ไม่พอสำหรับรูปขนาดเป้าหมาย จะค่อยๆ ลดขนาดรูปลง
- * แทนที่จะปล่อยให้รูปเบียด/ทับกัน หรือหลุดขอบจอ
- */
-function computeLayout(totalItems) {
-  const vmin = Math.min(window.innerWidth, window.innerHeight);
-  let imgSize = getTargetImgSize();
-  const minImgSize = 70; // ขนาดต่ำสุดที่ยังมองเห็นรูปชัดเจน
-
-  let radius, maxRadius;
-
-  for (let attempt = 0; attempt < 8; attempt++) {
-    const edgePadding = imgSize / 2 + 14; // กันรูปชนขอบจอ
-    maxRadius = (vmin / 2) - edgePadding;
-
-    const minRadiusFromCenter = imgSize * 0.95 + 46; // กันรูปทับข้อความตรงกลาง
-
-    // ระยะที่ต้องใช้รอบวงเพื่อไม่ให้รูป/หัวใจเบียดกันเกินไป
-    const spacingNeededRadius = (imgSize * totalItems * 1.12) / (2 * Math.PI);
-
-    radius = Math.max(vmin * 0.38, minRadiusFromCenter, spacingNeededRadius);
-
-    if (radius <= maxRadius || imgSize <= minImgSize) {
-      radius = Math.min(radius, Math.max(maxRadius, minImgSize));
-      break;
     }
 
-    // พื้นที่ไม่พอ -> ลดขนาดรูปลงทีละนิด แล้วคำนวณใหม่ (แทนการปล่อยให้เบียดกัน)
-    imgSize = Math.max(imgSize * 0.92, minImgSize);
-  }
 
-  return { imgSize, radius };
+    const initialSize=
+        getImageSize();
+
+
+    const layout=
+        getImageLayout(
+            images.length,
+            initialSize
+        );
+
+
+    const angleStep=
+        360/images.length;
+
+
+    images.forEach(
+        (
+            src,
+            index
+        )=>{
+
+            /*
+               รูปแต่ละใบ
+               อยู่ห่างเท่ากันจริง
+            */
+
+            const angle=
+                -90+
+                index*
+                angleStep;
+
+
+            const item=
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className=
+                "image-item";
+
+
+            item.style.setProperty(
+                "--image-size",
+                `${layout.size}px`
+            );
+
+
+            const holder=
+                document.createElement(
+                    "div"
+                );
+
+
+            holder.className=
+                "image-holder";
+
+
+            const img=
+                document.createElement(
+                    "img"
+                );
+
+
+            img.className=
+                "mom-img";
+
+
+            img.src=
+                src;
+
+
+            img.alt=
+                "Mom";
+
+
+            img.draggable=false;
+
+
+            holder.appendChild(img);
+
+            item.appendChild(holder);
+
+            container.appendChild(item);
+
+
+            imageObjects.push({
+
+                element:item,
+
+                angle:angle,
+
+                radius:layout.radius,
+
+                /*
+                   24 วินาที / รอบ
+                */
+
+                speed:
+                    (2*Math.PI)/24000
+
+            });
+
+        }
+    );
+
 }
 
-async function buildOrbit() {
-  // 1. โหลดรูปทั้งหมดที่มีอยู่จริง (ข้ามรูปที่ไม่มี)
-  const loadPromises = [];
-  for (let i = 1; i <= IMAGE_COUNT; i++) {
-    loadPromises.push(tryLoadImage(i));
-  }
-  const results = await Promise.all(loadPromises);
-  const validImages = results.filter(src => src !== null);
 
-  // 2. สร้างรายการ item แบบผสม รูป + หัวใจ
-  //    ถ้ามีรูป -> Mom, Heart, Mom, Heart...
-  //    ถ้าไม่มีรูปเลย -> ใช้หัวใจอย่างเดียวกระจายรอบวง
-  const items = [];
-  if (validImages.length > 0) {
-    validImages.forEach((src, i) => {
-      items.push({ type: "image", src });
-      items.push({ type: "heart", char: HEARTS[i % HEARTS.length] });
-    });
-  } else {
-    // ไม่มีรูปเลย ก็ยังมีหัวใจลอยรอบๆ ไม่ให้ว่างเปล่า
-    const fallbackCount = 10;
-    for (let i = 0; i < fallbackCount; i++) {
-      items.push({ type: "heart", char: HEARTS[i % HEARTS.length] });
+/* =========================================================
+   CREATE HEARTS
+   ========================================================= */
+
+function createHearts(){
+
+    const vmin=
+        Math.min(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+
+    for(
+        let i=0;
+        i<HEART_COUNT;
+        i++
+    ){
+
+        /*
+           กระจายด้วย
+           Golden Angle
+        */
+
+        const angle=
+            (
+                i*
+                137.508
+            )%360;
+
+
+        /*
+           หลายวง
+
+           ทำให้หัวใจ
+           ไม่อยู่ติดกัน
+        */
+
+        const layer=
+            i%5;
+
+
+        const radius=
+            vmin*
+            (
+                .40+
+                layer*.075
+            );
+
+
+        /*
+           18–38px
+        */
+
+        const size=
+            18+
+            Math.random()*20;
+
+
+        /*
+           20–32 วินาที
+        */
+
+        const speed=
+            (2*Math.PI)/
+            (
+                (
+                    20+
+                    (i%7)*2
+                )*1000
+            );
+
+
+        const item=
+            document.createElement(
+                "div"
+            );
+
+
+        item.className=
+            "heart-item";
+
+
+        const holder=
+            document.createElement(
+                "div"
+            );
+
+
+        holder.className=
+            "heart-holder";
+
+
+        const heart=
+            document.createElement(
+                "span"
+            );
+
+
+        heart.className=
+            "heart";
+
+
+        heart.textContent=
+            HEART_TYPES[
+                i%HEART_TYPES.length
+            ];
+
+
+        item.style.setProperty(
+            "--heart-size",
+            `${size}px`
+        );
+
+
+        item.style.setProperty(
+            "--float-speed",
+            `${2+Math.random()*2}s`
+        );
+
+
+        item.style.setProperty(
+            "--float-delay",
+            `${Math.random()*2}s`
+        );
+
+
+        holder.appendChild(
+            heart
+        );
+
+
+        item.appendChild(
+            holder
+        );
+
+
+        container.appendChild(
+            item
+        );
+
+
+        heartObjects.push({
+
+            element:item,
+
+            angle:angle,
+
+            radius:radius,
+
+            speed:speed
+
+        });
+
     }
-  }
 
-  // 3. คำนวณขนาดรูป + รัศมีวงโคจรแบบ dynamic (สมดุลตามจำนวนรูป + พื้นที่หน้าจอ)
-  const total = items.length;
-  const angleStep = 360 / total;
-  const { imgSize, radius: baseRadius } = computeLayout(total);
-
-  items.forEach((item, i) => {
-    const angle = angleStep * i;
-    const duration = 18 + (i % 5) * 2; // ความเร็วต่างกันเล็กน้อยแต่ยังนุ่มนวล
-    const delay = -(duration * (i / total)); // กระจายจุดเริ่มรอบวง ไม่กระจุก
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "orbit-item";
-    wrapper.style.setProperty("--radius", `${baseRadius}px`);
-    wrapper.style.animationDuration = `${duration}s`;
-    wrapper.style.animationDelay = `${delay}s`;
-    wrapper.style.transform = `rotate(${angle}deg) translateX(${baseRadius}px)`;
-
-    const inner = document.createElement("div");
-    inner.className = "inner";
-    inner.style.animationDuration = `${2 + Math.random() * 1.5}s`;
-    inner.style.animationDelay = `${Math.random() * 2}s`;
-
-    if (item.type === "image") {
-      const img = document.createElement("img");
-      img.src = item.src;
-      img.className = "mom-img";
-      img.alt = "Mom";
-      // ตั้งขนาดจริงตามที่คำนวณไว้ (ให้สอดคล้องกับรัศมีวงโคจรเสมอ)
-      img.style.width = `${imgSize}px`;
-      img.style.height = `${imgSize}px`;
-      img.onerror = () => { wrapper.remove(); }; // เผื่อรูปพังระหว่างแสดงผล ไม่ให้เว็บพัง
-      inner.appendChild(img);
-    } else {
-      const span = document.createElement("span");
-      span.className = "heart";
-      span.textContent = item.char;
-      inner.appendChild(span);
-    }
-
-    wrapper.appendChild(inner);
-    orbitContainer.appendChild(wrapper);
-  });
 }
 
-buildOrbit();
 
-// ปรับวงโคจรใหม่เมื่อหมุนจอ (orientation change) เพื่อความ responsive
+/* =========================================================
+   MAIN ANIMATION
+   ========================================================= */
+
+function animate(
+    timestamp
+){
+
+    const elapsed=
+        timestamp-
+        startTime;
+
+
+    /* =====================================================
+       IMAGES
+       ===================================================== */
+
+    imageObjects.forEach(
+        object=>{
+
+            /*
+               หมุนจริง
+
+               elapsed เปลี่ยนทุก frame
+            */
+
+            const currentAngle=
+
+                (
+                    object.angle*
+                    Math.PI/
+                    180
+                )
+                +
+                elapsed*
+                object.speed;
+
+
+            /*
+               คำนวณ X
+            */
+
+            const x=
+                Math.cos(
+                    currentAngle
+                )*
+                object.radius;
+
+
+            /*
+               คำนวณ Y
+            */
+
+            const y=
+                Math.sin(
+                    currentAngle
+                )*
+                object.radius;
+
+
+            /*
+               เปลี่ยนตำแหน่ง
+
+               ไม่มี rotate()
+            */
+
+            object.element.style.transform=
+
+                `translate(
+                    ${x}px,
+                    ${y}px
+                )`;
+
+        }
+    );
+
+
+    /* =====================================================
+       HEARTS
+       ===================================================== */
+
+    heartObjects.forEach(
+        object=>{
+
+            const currentAngle=
+
+                (
+                    object.angle*
+                    Math.PI/
+                    180
+                )
+                +
+                elapsed*
+                object.speed;
+
+
+            const x=
+                Math.cos(
+                    currentAngle
+                )*
+                object.radius;
+
+
+            const y=
+                Math.sin(
+                    currentAngle
+                )*
+                object.radius;
+
+
+            /*
+               เคลื่อนรอบข้อความ
+
+               แต่ตัวหัวใจ
+               ไม่ rotate
+            */
+
+            object.element.style.transform=
+
+                `translate(
+                    ${x}px,
+                    ${y}px
+                )`;
+
+        }
+    );
+
+
+    requestAnimationFrame(
+        animate
+    );
+
+}
+
+
+/* =========================================================
+   BUILD
+   ========================================================= */
+
+async function buildScene(){
+
+    /*
+       ล้างของเก่า
+    */
+
+    container
+        .querySelectorAll(
+            ".image-item,.heart-item"
+        )
+        .forEach(
+            element=>
+                element.remove()
+        );
+
+
+    imageObjects=[];
+
+    heartObjects=[];
+
+
+    startTime=
+        performance.now();
+
+
+    await createImages();
+
+    createHearts();
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+buildScene();
+
+
+/* =========================================================
+   START ANIMATION
+   ========================================================= */
+
+requestAnimationFrame(
+    animate
+);
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 let resizeTimer;
-window.addEventListener("resize", () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    document.querySelectorAll(".orbit-item").forEach(el => el.remove());
-    buildOrbit();
-  }, 300);
-});
 
-/* ===============================
-   TOUCH / CLICK EFFECT
-   =============================== */
-function spawnTapEffect(x, y) {
-  const el = document.createElement("div");
-  el.className = "tap-fx";
-  el.textContent = TAP_EFFECTS[Math.floor(Math.random() * TAP_EFFECTS.length)];
-  el.style.left = `${x}px`;
-  el.style.top = `${y}px`;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1000);
+
+window.addEventListener(
+    "resize",
+    ()=>{
+
+        clearTimeout(
+            resizeTimer
+        );
+
+
+        resizeTimer=
+            setTimeout(
+                ()=>{
+                    buildScene();
+                },
+                300
+            );
+
+    }
+);
+
+
+/* =========================================================
+   TAP EFFECT
+   ========================================================= */
+
+function spawnTapEffect(
+    x,
+    y
+){
+
+    const element=
+        document.createElement(
+            "div"
+        );
+
+
+    element.className=
+        "tap-fx";
+
+
+    element.textContent=
+        TAP_EFFECTS[
+            Math.floor(
+                Math.random()*
+                TAP_EFFECTS.length
+            )
+        ];
+
+
+    element.style.left=
+        `${x}px`;
+
+
+    element.style.top=
+        `${y}px`;
+
+
+    document.body.appendChild(
+        element
+    );
+
+
+    setTimeout(
+        ()=>{
+            element.remove();
+        },
+        1000
+    );
+
 }
 
-document.addEventListener("click", (e) => {
-  spawnTapEffect(e.clientX, e.clientY);
-});
 
-document.addEventListener("touchstart", (e) => {
-  const touch = e.touches[0];
-  if (touch) spawnTapEffect(touch.clientX, touch.clientY);
-}, { passive: true });
+/* =========================================================
+   CLICK
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event=>{
+
+        spawnTapEffect(
+            event.clientX,
+            event.clientY
+        );
+
+    }
+);
+
+
+/* =========================================================
+   TOUCH
+   ========================================================= */
+
+document.addEventListener(
+    "touchstart",
+    event=>{
+
+        const touch=
+            event.touches[0];
+
+
+        if(touch){
+
+            spawnTapEffect(
+                touch.clientX,
+                touch.clientY
+            );
+
+        }
+
+    },
+    {
+        passive:true
+    }
+);
+
 </script>
 
 </body>
+
 </html>
