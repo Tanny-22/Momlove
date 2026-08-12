@@ -6,7 +6,7 @@
 <title>I LOVE MOM 3000</title>
 <style>
   :root{
-    --orbit-size: min(88vw, 88vh, 640px);
+    --orbit-size: min(94vw, 94vh, 760px);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{
@@ -89,42 +89,57 @@
     50%{transform:translateY(-6px) scale(1.05);}
   }
 
+  /* ===============================
+     ขนาดรูปภาพ (Responsive)
+     ค่าเหล่านี้เป็น "ค่าเป้าหมายเริ่มต้น" ตาม breakpoint
+     JavaScript จะคำนวณขนาดจริงเพิ่มเติมโดยอิงจาก
+     จำนวนรูป + พื้นที่หน้าจอ แล้ว set ทับผ่าน inline style
+     เพื่อให้ขนาดรูปกับระยะวงโคจรสอดคล้องกันเสมอ
+     =============================== */
   .mom-img{
-    /* ขนาดพื้นฐาน อิงตาม vmin เพื่อให้สมส่วนทั้งแนวตั้ง/แนวนอน */
-    width:clamp(70px, 20vmin, 110px);
-    height:clamp(70px, 20vmin, 110px);
+    /* มือถือทั่วไป: เป้าหมาย 120–150px */
+    width:clamp(120px, 34vmin, 150px);
+    height:clamp(120px, 34vmin, 150px);
     border-radius:50%;
     object-fit:cover;
-    border:3px solid #fff;
-    box-shadow:0 2px 10px rgba(255,60,120,0.45);
+    border:4px solid #fff;
+    box-shadow:0 4px 16px rgba(255,45,107,0.5), 0 0 0 2px rgba(255,255,255,0.6);
   }
 
-  /* จอเล็กมาก (มือถือจอเล็ก) ลดขนาดลงอัตโนมัติ */
+  /* มือถือจอเล็ก: เป้าหมาย 100–120px */
   @media (max-width:360px){
     .mom-img{
-      width:clamp(56px, 18vmin, 90px);
-      height:clamp(56px, 18vmin, 90px);
+      width:clamp(100px, 30vmin, 120px);
+      height:clamp(100px, 30vmin, 120px);
     }
   }
 
-  /* Tablet ขึ้นไป */
+  /* มือถือจอใหญ่ (เช่น Pro Max / Plus): เป้าหมาย 150–170px */
+  @media (min-width:430px) and (max-width:699px){
+    .mom-img{
+      width:clamp(140px, 36vmin, 170px);
+      height:clamp(140px, 36vmin, 170px);
+    }
+  }
+
+  /* Tablet */
   @media (min-width:700px){
     .mom-img{
-      width:clamp(80px, 12vmin, 130px);
-      height:clamp(80px, 12vmin, 130px);
+      width:clamp(130px, 20vmin, 170px);
+      height:clamp(130px, 20vmin, 170px);
     }
   }
 
   /* Desktop: ไม่จำเป็นต้องใหญ่เท่ามือถือตามสัดส่วนจอ */
   @media (min-width:1100px){
     .mom-img{
-      width:clamp(70px, 8vmin, 110px);
-      height:clamp(70px, 8vmin, 110px);
+      width:clamp(90px, 10vmin, 140px);
+      height:clamp(90px, 10vmin, 140px);
     }
   }
 
   .heart{
-    font-size:clamp(18px, 5vw, 30px);
+    font-size:clamp(20px, 6vw, 34px);
     filter:drop-shadow(0 2px 4px rgba(255,60,120,0.4));
   }
 
@@ -188,6 +203,63 @@ function tryLoadImage(index) {
   });
 }
 
+// อ่านขนาดรูปเป้าหมายตาม breakpoint ปัจจุบัน (ให้ตรงกับค่าใน CSS .mom-img)
+function getTargetImgSize() {
+  const w = window.innerWidth;
+  const vmin = Math.min(window.innerWidth, window.innerHeight);
+  if (w <= 360) {
+    return clampVal(100, vmin * 0.30, 120);
+  } else if (w >= 1100) {
+    return clampVal(90, vmin * 0.10, 140);
+  } else if (w >= 700) {
+    return clampVal(130, vmin * 0.20, 170);
+  } else if (w >= 430) {
+    return clampVal(140, vmin * 0.36, 170);
+  } else {
+    return clampVal(120, vmin * 0.34, 150);
+  }
+}
+
+function clampVal(min, val, max) {
+  return Math.min(Math.max(val, min), max);
+}
+
+/**
+ * คำนวณขนาดรูปจริง + รัศมีวงโคจร แบบสมดุล
+ * โดยพิจารณาจาก: ขนาดหน้าจอ, จำนวนรูป(+หัวใจ), ขนาดรูปเป้าหมาย
+ * ถ้าพื้นที่ไม่พอสำหรับรูปขนาดเป้าหมาย จะค่อยๆ ลดขนาดรูปลง
+ * แทนที่จะปล่อยให้รูปเบียด/ทับกัน หรือหลุดขอบจอ
+ */
+function computeLayout(totalItems) {
+  const vmin = Math.min(window.innerWidth, window.innerHeight);
+  let imgSize = getTargetImgSize();
+  const minImgSize = 70; // ขนาดต่ำสุดที่ยังมองเห็นรูปชัดเจน
+
+  let radius, maxRadius;
+
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const edgePadding = imgSize / 2 + 14; // กันรูปชนขอบจอ
+    maxRadius = (vmin / 2) - edgePadding;
+
+    const minRadiusFromCenter = imgSize * 0.95 + 46; // กันรูปทับข้อความตรงกลาง
+
+    // ระยะที่ต้องใช้รอบวงเพื่อไม่ให้รูป/หัวใจเบียดกันเกินไป
+    const spacingNeededRadius = (imgSize * totalItems * 1.12) / (2 * Math.PI);
+
+    radius = Math.max(vmin * 0.38, minRadiusFromCenter, spacingNeededRadius);
+
+    if (radius <= maxRadius || imgSize <= minImgSize) {
+      radius = Math.min(radius, Math.max(maxRadius, minImgSize));
+      break;
+    }
+
+    // พื้นที่ไม่พอ -> ลดขนาดรูปลงทีละนิด แล้วคำนวณใหม่ (แทนการปล่อยให้เบียดกัน)
+    imgSize = Math.max(imgSize * 0.92, minImgSize);
+  }
+
+  return { imgSize, radius };
+}
+
 async function buildOrbit() {
   // 1. โหลดรูปทั้งหมดที่มีอยู่จริง (ข้ามรูปที่ไม่มี)
   const loadPromises = [];
@@ -214,35 +286,10 @@ async function buildOrbit() {
     }
   }
 
-  // 3. คำนวณตำแหน่งวงโคจรแบบ dynamic
+  // 3. คำนวณขนาดรูป + รัศมีวงโคจรแบบ dynamic (สมดุลตามจำนวนรูป + พื้นที่หน้าจอ)
   const total = items.length;
   const angleStep = 360 / total;
-
-  // ประมาณขนาดรูป ณ ปัจจุบัน (ต้องตรงกับค่าใน CSS .mom-img เพื่อไม่ให้รูปชนขอบจอ)
-  const vmin = Math.min(window.innerWidth, window.innerHeight);
-  let approxImgSize;
-  if (window.innerWidth <= 360) {
-    approxImgSize = Math.min(Math.max(vmin * 0.18, 56), 90);
-  } else if (window.innerWidth >= 1100) {
-    approxImgSize = Math.min(Math.max(vmin * 0.08, 70), 110);
-  } else if (window.innerWidth >= 700) {
-    approxImgSize = Math.min(Math.max(vmin * 0.12, 80), 130);
-  } else {
-    approxImgSize = Math.min(Math.max(vmin * 0.20, 70), 110);
-  }
-
-  // รัศมีวงโคจร: เว้นระยะขอบจอ (padding) และเว้นพื้นที่ให้ข้อความตรงกลางไม่ถูกบัง
-  const edgePadding = approxImgSize / 2 + 12; // กันรูปชนขอบจอ
-  const maxRadius = (vmin / 2) - edgePadding;
-  const minRadiusFromCenter = approxImgSize * 0.9 + 40; // กันรูปทับข้อความตรงกลาง
-
-  // กันรูปทับกันเองเมื่อรูปมีขนาดใหญ่ขึ้นและมีจำนวนมาก (คำนวณจากเส้นรอบวงที่ต้องใช้)
-  const spacingNeededRadius = (approxImgSize * total * 1.15) / (2 * Math.PI);
-
-  const baseRadius = Math.min(
-    Math.max(vmin * 0.36, minRadiusFromCenter, spacingNeededRadius),
-    maxRadius
-  );
+  const { imgSize, radius: baseRadius } = computeLayout(total);
 
   items.forEach((item, i) => {
     const angle = angleStep * i;
@@ -266,6 +313,9 @@ async function buildOrbit() {
       img.src = item.src;
       img.className = "mom-img";
       img.alt = "Mom";
+      // ตั้งขนาดจริงตามที่คำนวณไว้ (ให้สอดคล้องกับรัศมีวงโคจรเสมอ)
+      img.style.width = `${imgSize}px`;
+      img.style.height = `${imgSize}px`;
       img.onerror = () => { wrapper.remove(); }; // เผื่อรูปพังระหว่างแสดงผล ไม่ให้เว็บพัง
       inner.appendChild(img);
     } else {
